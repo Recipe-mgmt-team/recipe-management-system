@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NutriChef | Akıllı Yemek Tarifi & Besin Değeri Yönetim Sistemi</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Arka Plan Efektleri -->
+    <div class="blob-bg blob-1"></div>
+    <div class="blob-bg blob-2"></div>
+
+    <!-- Üst Navigasyon Çubuğu -->
+    <header class="navbar">
+        <div class="nav-container">
+            <div class="brand-logo">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                </div>
+                <div class="logo-text">
+                    <span class="logo-title">Nutri<span class="highlight">Chef</span></span>
+                    <span class="logo-badge">LLM & Besin Analizi</span>
+                </div>
+            </div>
+
+            <div class="nav-actions">
+                <button id="openAiChefBtn" class="btn btn-primary glow-effect">
+                    <i class="fa-solid fa-robot"></i>
+                    <span>Dolabımda Ne Var? (AI Şef)</span>
+                </button>
+                <button id="openAddRecipeBtn" class="btn btn-secondary">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Tarif Ekle</span>
+                </button>
+                <button id="openSettingsBtn" class="btn btn-icon" title="API Ayarları">
+                    <i class="fa-solid fa-gear"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <!-- Hero & İstatistikler -->
+        <section class="hero-section">
+            <div class="hero-text">
+                <span class="hero-tag"><i class="fa-solid fa-fire-flame-curved"></i> Akıllı Tarif & Makro Yönetimi</span>
+                <h1>Evinizdeki Malzemelerle <span class="gradient-text">Yapay Zeka Destekli</span> Tarifler</h1>
+                <p>LLM API entegrasyonu ile elinizdeki malzemelere göre anında özel yemek tarifleri üretin, kalori ve besin değerlerini otomatik hesaplayarak kategorize edin.</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fa-solid fa-utensils"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="statTotalRecipes">5</span>
+                        <span class="stat-label">Toplam Tarif</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon ai-icon"><i class="fa-solid fa-brain"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="statAiRecipes">0</span>
+                        <span class="stat-label">AI Tarafından Üretilen</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon protein-icon"><i class="fa-solid fa-dumbbell"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="statAvgProtein">24g</span>
+                        <span class="stat-label">Ort. Protein</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Akıllı AI Şef Çekmecesi / Kutusu -->
+        <section id="aiChefSection" class="ai-chef-banner glass-card">
+            <div class="banner-header">
+                <div class="banner-title">
+                    <i class="fa-solid fa-hat-chef"></i>
+                    <div>
+                        <h2>Akıllı Mutfak Şefi (LLM Tabanlı Öneri Motoru)</h2>
+                        <p>Elinizde kalan malzemeleri seçin veya yazın; yapay zeka size besin değerleriyle birlikte en uygun tarifi çıkarsın.</p>
+                    </div>
+                </div>
+                <button id="closeAiChefBtn" class="close-btn" title="Gizle"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="ai-chef-body">
+                <!-- Hızlı Seçim Hapları -->
+                <div class="quick-tags-container">
+                    <span class="quick-title">Hızlı Ekle:</span>
+                    <div class="tag-pills" id="quickIngredientPills">
+                        <span class="pill-btn" data-ing="Tavuk">🍗 Tavuk</span>
+                        <span class="pill-btn" data-ing="Yumurta">🥚 Yumurta</span>
+                        <span class="pill-btn" data-ing="Domates">🍅 Domates</span>
+                        <span class="pill-btn" data-ing="Biber">🫑 Biber</span>
+                        <span class="pill-btn" data-ing="Soğan">🧅 Soğan</span>
+                        <span class="pill-btn" data-ing="Pirinç">🍚 Pirinç</span>
+                        <span class="pill-btn" data-ing="Makarna">🍝 Makarna</span>
+                        <span class="pill-btn" data-ing="Yoğurt">🥛 Yoğurt</span>
+                        <span class="pill-btn" data-ing="Peynir">🧀 Peynir</span>
+                        <span class="pill-btn" data-ing="Mantar">🍄 Mantar</span>
+                    </div>
+                </div>
+
+                <!-- Malzeme Giriş Alanı -->
+                <div class="ingredient-input-wrapper">
+                    <div class="selected-ingredients-box" id="selectedTagsBox">
+                        <!-- Seçilen etiketler buraya gelecek -->
+                        <input type="text" id="customIngredientInput" placeholder="Malzeme yazıp Enter'a basın (örn: kıyma, patates)...">
+                    </div>
+                </div>
+
+                <div class="ai-controls-row">
+                    <div class="select-group">
+                        <label><i class="fa-solid fa-clock"></i> Öğün:</label>
+                        <select id="aiMealTypeSelect">
+                            <option value="Akşam Yemeği">Akşam Yemeği</option>
+                            <option value="Öğle Yemeği">Öğle Yemeği</option>
+                            <option value="Kahvaltı">Kahvaltı</option>
+                            <option value="Hızlı Atıştırmalık">Pratik Atıştırmalık</option>
+                        </select>
+                    </div>
+
+                    <div class="select-group">
+                        <label><i class="fa-solid fa-leaf"></i> Tercih:</label>
+                        <select id="aiDietarySelect">
+                            <option value="Tümü">Fark Etmez</option>
+                            <option value="Yüksek Protein">Yüksek Protein Hedefi</option>
+                            <option value="Düşük Karbonhidrat / Keto">Düşük Karb / Keto</option>
+                            <option value="Düşük Kalorili Diyet">Düşük Kalori & Diyet</option>
+                        </select>
+                    </div>
+
+                    <button id="generateAiRecipeBtn" class="btn btn-emerald glow-emerald">
+                        <i class="fa-solid fa-sparkles"></i>
+                        <span>Akıllı Tarif & Besin Hesabı Üret</span>
+                    </button>
+                </div>
+
+                <!-- LLM Yükleniyor Göstergesi -->
+                <div id="aiLoadingIndicator" class="ai-loading-box hidden">
+                    <div class="chef-spinner"></div>
+                    <p class="loading-title">Yapay zeka şef buzdolabınızı inceliyor...</p>
+                    <p class="loading-sub">Malzemeler kombine ediliyor, kalori ve makro besin değerleri hesaplanıyor.</p>
+                </div>
+
+                <!-- Üretilen AI Tarif Sonuç Kartı -->
+                <div id="aiResultCard" class="ai-result-box hidden">
+                    <div class="result-header">
+                        <div class="badge-row">
+                            <span class="badge badge-ai"><i class="fa-solid fa-brain"></i> AI Üretimi</span>
+                            <span class="badge badge-category" id="aiResultCategory">Yüksek Protein</span>
+                            <span class="badge badge-time" id="aiResultTime"><i class="fa-regular fa-clock"></i> 20 dk</span>
+                        </div>
+                        <h3 id="aiResultTitle">Özel Şef Tarifi</h3>
+                        <p id="aiResultDesc" class="result-desc"></p>
+                    </div>
+
+                    <!-- Besin Değerleri Önizleme -->
+                    <div class="nutrition-strip">
+                        <div class="nutri-box">
+                            <span class="n-val" id="aiNutrCal">350</span>
+                            <span class="n-unit">kcal</span>
+                            <span class="n-lbl">Kalori</span>
+                        </div>
+                        <div class="nutri-box">
+                            <span class="n-val" id="aiNutrProtein">32g</span>
+                            <span class="n-lbl">Protein</span>
+                        </div>
+                        <div class="nutri-box">
+                            <span class="n-val" id="aiNutrCarbs">15g</span>
+                            <span class="n-lbl">Karb</span>
+                        </div>
+                        <div class="nutri-box">
+                            <span class="n-val" id="aiNutrFat">12g</span>
+                            <span class="n-lbl">Yağ</span>
+                        </div>
+                    </div>
+
+                    <!-- Malzemeler ve Yapılış -->
+                    <div class="recipe-two-col">
+                        <div class="col-box">
+                            <h4><i class="fa-solid fa-basket-shopping"></i> Kullanılan Malzemeler:</h4>
+                            <ul id="aiResultIngredientsList"></ul>
+                        </div>
+                        <div class="col-box">
+                            <h4><i class="fa-solid fa-list-ol"></i> Hazırlanışı:</h4>
+                            <div id="aiResultInstructions" class="instructions-text"></div>
+                        </div>
+                    </div>
+
+                    <div class="result-actions">
+                        <button id="saveAiRecipeBtn" class="btn btn-primary">
+                            <i class="fa-solid fa-bookmark"></i>
+                            <span>Bu Tarifi Veritabanına Kaydet</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Arama, Filtreleme & Tarif Kataloğu -->
+        <section class="catalog-section">
+            <div class="section-top">
+                <div class="search-inputs-container">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="recipeSearchInput" placeholder="Tarif adı veya açıklama ile ara...">
+                    </div>
+                    <div class="search-box ing-search-box">
+                        <i class="fa-solid fa-carrot"></i>
+                        <input type="text" id="ingredientSearchInput" placeholder="Malzemeye göre filtrele (örn: somon, kinoa)...">
+                    </div>
+                </div>
+
+                <!-- Kategori Butonları -->
+                <div class="category-filters" id="categoryFilters">
+                    <button class="filter-pill active" data-category="Tümü">Tümü</button>
+                    <button class="filter-pill" data-category="Yüksek Protein">💪 Yüksek Protein</button>
+                    <button class="filter-pill" data-category="Düşük Karbonhidrat">🥗 Düşük Karbonhidrat</button>
+                    <button class="filter-pill" data-category="Düşük Kalori & Diyet">⚡ Düşük Kalori & Diyet</button>
+                    <button class="filter-pill" data-category="Keto Dostu">🥑 Keto Dostu</button>
+                    <button class="filter-pill" data-category="Dengeli Beslenme">⚖️ Dengeli Beslenme</button>
+                </div>
+            </div>
+
+            <!-- Tarif Kartları Izgarası -->
+            <div class="recipes-grid" id="recipesGrid">
+                <!-- Javascript dinamik olarak dolduracak -->
+            </div>
+
+            <!-- Boş Sonuç Durumu -->
+            <div id="emptyState" class="empty-state hidden">
+                <i class="fa-solid fa-plate-wheat"></i>
+                <h3>Aradığınız kriterlere uygun tarif bulunamadı</h3>
+                <p>Malzeme filtrenizi değiştirebilir veya "Dolabımda Ne Var?" ile yapay zekaya yeni tarif ürettirebilirsiniz.</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal: Tarif Detayı -->
+    <div id="recipeDetailModal" class="modal-overlay hidden">
+        <div class="modal-content glass-card detail-modal">
+            <button class="modal-close" id="closeDetailModalBtn"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-recipe-header" id="modalRecipeHeader">
+                <!-- Resim ve başlık js ile doldurulacak -->
+            </div>
+            <div class="modal-recipe-body" id="modalRecipeBody">
+                <!-- İçerik js ile doldurulacak -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Yeni Manuel Tarif Ekle -->
+    <div id="addRecipeModal" class="modal-overlay hidden">
+        <div class="modal-content glass-card form-modal">
+            <button class="modal-close" id="closeAddModalBtn"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-title-area">
+                <i class="fa-solid fa-book-medical"></i>
+                <h2>Yeni Yemek Tarifi Ekle</h2>
+                <p>Besin değerlerini girin; sistem kategorisini otomatik hesaplayıp veritabanına kaydetsin.</p>
+            </div>
+
+            <form id="addRecipeForm" class="modal-form">
+                <div class="form-group">
+                    <label>Yemek Adı *</label>
+                    <input type="text" id="formTitle" required placeholder="Örn: Fırında Baharatlı Levrek">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Hazırlama Süresi (Dk)</label>
+                        <input type="number" id="formPrepTime" value="20" min="5">
+                    </div>
+                    <div class="form-group">
+                        <label>Porsiyon</label>
+                        <input type="number" id="formServings" value="2" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Zorluk</label>
+                        <select id="formDifficulty">
+                            <option value="Kolay">Kolay</option>
+                            <option value="Orta" selected>Orta</option>
+                            <option value="İleri">İleri</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Açıklama</label>
+                    <input type="text" id="formDescription" placeholder="Kısa bir tanıtım cümlesi...">
+                </div>
+
+                <!-- Malzemeler Dinamik Liste -->
+                <div class="form-group">
+                    <div class="label-with-btn">
+                        <label>Malzemeler Listesi</label>
+                        <button type="button" id="formAddIngRowBtn" class="btn-text-action"><i class="fa-solid fa-plus"></i> Malzeme Ekle</button>
+                    </div>
+                    <div id="formIngredientsContainer" class="form-ingredients-list">
+                        <div class="ing-input-row">
+                            <input type="text" placeholder="Malzeme Adı (örn: Tavuk)" class="form-ing-name" required>
+                            <input type="text" placeholder="Miktar (örn: 250 gr)" class="form-ing-amount">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Hazırlanış Adımları *</label>
+                    <textarea id="formInstructions" rows="4" required placeholder="1. Adım...\n2. Adım..."></textarea>
+                </div>
+
+                <!-- Besin Değerleri Girişi -->
+                <div class="form-nutrition-box">
+                    <h4><i class="fa-solid fa-chart-pie"></i> Besin Değerleri (1 Porsiyon İçin)</h4>
+                    <p class="sub-hint">Bu değerlere göre tarif otomatik kategorize edilecektir.</p>
+                    <div class="form-row nutri-inputs">
+                        <div class="form-group">
+                            <label>Kalori (kcal) *</label>
+                            <input type="number" id="formCal" value="350" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Protein (g) *</label>
+                            <input type="number" id="formProtein" value="25" step="0.5" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Karb (g) *</label>
+                            <input type="number" id="formCarbs" value="15" step="0.5" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Yağ (g) *</label>
+                            <input type="number" id="formFat" value="10" step="0.5" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelAddModalBtn">Vazgeç</button>
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-check"></i> Tarifi Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: API Ayarları -->
+    <div id="settingsModal" class="modal-overlay hidden">
+        <div class="modal-content glass-card settings-modal">
+            <button class="modal-close" id="closeSettingsModalBtn"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-title-area">
+                <i class="fa-solid fa-key"></i>
+                <h2>Google Gemini API Ayarları</h2>
+                <p>LLM entegrasyonu için Google AI Studio anahtarınızı buradan güncelleyebilirsiniz.</p>
+            </div>
+            <div class="settings-body">
+                <div class="form-group">
+                    <label>Gemini API Key</label>
+                    <input type="password" id="geminiApiKeyInput" placeholder="AIzaSy...">
+                    <small>Anahtarınız yoksa sistem dahili akıllı öneri motoruyla çalışmaya devam eder.</small>
+                </div>
+                <div class="settings-status" id="settingsKeyStatus">
+                    Durum kontrol ediliyor...
+                </div>
+                <div class="modal-form-actions">
+                    <button id="saveApiKeyBtn" class="btn btn-primary">Kaydet & Aktifleştir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bildirim Toast -->
+    <div id="toastNotification" class="toast hidden"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
