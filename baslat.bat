@@ -1,16 +1,20 @@
 @echo off
 cd /d "%~dp0"
-title Recipe Management System - NutriChef
-echo ========================================================
-echo    NutriChef - Akilli Yemek Tarifi & Besin Yonetimi
-echo ========================================================
-echo.
-echo Gerekli kutuphaneler kontrol ediliyor...
+title Recipe Management System
+if not exist .env (
+  copy .env.example .env >nul
+  echo .env created. Open it and add your USDA_API_KEY and GEMINI_API_KEY, then run this file again.
+  notepad .env
+  pause
+  exit /b
+)
+echo Installing requirements...
 pip install -q -r requirements.txt
-echo.
-echo Sunucu baslatiliyor (http://127.0.0.1:8000)...
-echo Tarayiciniz otomatik olarak acilacaktir.
-echo.
-start http://127.0.0.1:8000
+if not exist recipes.db (
+  echo First run: importing recipes from TheMealDB, this takes a few minutes...
+  python import_recipes.py --limit 80
+)
+echo Starting server at http://127.0.0.1:8000
+start "" http://127.0.0.1:8000
 python main.py
 pause
